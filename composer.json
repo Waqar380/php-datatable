@@ -1,5 +1,5 @@
 {
-    "name": "syed/datatable",
+    "name": "syedwaqar/datatable",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Syed\\Datatable": "src/"
+            "SyedWaqar\\Datatable": "src/"
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Syed\Datatable;
+namespace SyedWaqar\Datatable;
 
 
 /**
