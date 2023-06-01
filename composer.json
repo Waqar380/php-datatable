@@ -1,5 +1,5 @@
 {
-    "name": "waqar/php-datatable",
+    "name": "syed/datatable",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Waqar\\Php-Datatable": "src/"
+            "Syed\\Datatable": "src/"
         }
     }
 }
