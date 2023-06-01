@@ -8,7 +8,7 @@ On Server side just use
 Add package via composer
 
 ```
-composer require waqar/php-datatable
+composer require syedwaqar/datatable
 ```
 
 ```php
