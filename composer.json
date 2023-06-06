@@ -8,7 +8,7 @@
             "email": "waqar.ali@attech-ltd.com"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "php": ">=7.0.0"
     },
