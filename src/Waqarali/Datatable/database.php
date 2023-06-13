@@ -139,7 +139,7 @@ class database
         $dtColumns = self::pluck( $columns, 'dt' );
 
         if ( isset($request['search']) && $request['search']['value'] != '' ) {
-            $str = $request['search']['value'];
+            $str = str_replace("'", "''", $request['search']['value']);
             for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
                 $requestColumn = $request['columns'][$i];
                 $columnIdx = array_search( $requestColumn['data'], $dtColumns );
@@ -150,39 +150,26 @@ class database
 
                         case 1:
                             if(is_int($str)){
-                                $binding = self::bind( $bindings, $str, $column['type'] );
-                                $globalSearch[] = "".$column['db']." = ".$binding;
+                                $globalSearch[] = "{$column['db']} = '{$str}'";
                             }
                             break;
                         case 2:
-                            if(strpos($str,"|")){
-                                $pices = explode("|", trim($str,"|"));
-                                foreach ($pices as $p){
-                                    $binding = self::bind( $bindings, '%'.$p.'%', $column['type'] );
-                                    $globalSearch[] = "".$column['db']." ilike ".$binding;
-                                }
-                            }else{
-                                $binding = self::bind( $bindings, '%'.$str.'%', $column['type'] );
-                                $globalSearch[] = "".$column['db']." ilike ".$binding;
-                            }
+                            $globalSearch[] = "LOWER({$column['db']}) ~ LOWER('{$str}')";
 
                             break;
                         case 98:
                             //Date Type
-                            $binding = self::bind( $bindings, '%'.$str.'%', 2 );
-                            $globalSearch[] = "to_char(".$column['db'].", 'dd-mm-YYYY')  ilike ".$binding;
+                            $globalSearch[] = "to_char(".$column['db'].", 'dd-mm-YYYY')  ilike '".$str. "'";
                             break;
-                            break;
+                           
                         case 99:
                             //Date Type
-                            $binding = self::bind( $bindings, '%'.$str.'%', 2 );
-                            $globalSearch[] = "to_char(".$column['db'].", 'dd-mm-YYYY HH:ii:ss')  ilike ".$binding;
+                            $globalSearch[] = "to_char(".$column['db'].", 'dd-mm-YYYY HH:ii:ss')  ilike '".$str. "'";
                             break;
 
                         case 100:
                             //Date custom format Type
-                            $binding = self::bind( $bindings, '%'.$str.'%', 2 );
-                            $globalSearch[] = "to_char(".$column['db'].", '" . $column['format'] ."')  ilike ".$binding;
+                            $globalSearch[] = "to_char(".$column['db'].", '" . $column['format'] ."')  ilike '".$str. "'";
                             break;
                         default:
                             break;
@@ -198,26 +185,17 @@ class database
                 }
             }
         }
+
+        
+
         // Individual column filtering
         for ( $i=0, $ien=count($request['columns']) ; $i<$ien ; $i++ ) {
             $requestColumn = $request['columns'][$i];
             $columnIdx = array_search( $requestColumn['data'], $dtColumns );
             $column = $columns[ $columnIdx ];
             $str = $requestColumn['search']['value'];
-            if ( $requestColumn['searchable'] == 'true' &&
-                $str != '' ) {
-                if(strpos($str,"|")){
-                    $pices = explode("|", trim($str,"|"));
-                    $columnMultipleSearch = array();
-                    foreach ($pices as $p){
-                        $binding = self::bind( $bindings, ''.$p.'', $column['type'] );
-                        $columnMultipleSearch[] = "".$column['db']." ilike ".$binding;
-                    }
-                    $columnSearch[] = $columnMultipleSearch;
-                }else{
-                    $binding = self::bind( $bindings, ''.$str.'', $column['type'] );
-                    $columnSearch[] = "".$column['db']." ilike ".$binding;
-                }
+            if ( $requestColumn['searchable'] == 'true' && $str != '' ) {
+                    $columnSearch[] = "LOWER(".$column['db'].") ~ LOWER('".$str."')";
             }
         }
         // Combine the filters into a single string
